@@ -7,5 +7,4 @@ catboost==1.0.5
 xgboost
 dill
 joblib
-dask-ml
 #-e .
