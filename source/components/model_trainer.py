@@ -1,9 +1,8 @@
 import os
 import sys
+import numpy as np
+from sklearn.preprocessing import StandardScaler
 from dataclasses import dataclass
-import time
-
-from catboost import CatBoostClassifier
 from sklearn.ensemble import (
     AdaBoostClassifier,
     GradientBoostingClassifier,
@@ -14,11 +13,15 @@ from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
+from catboost import CatBoostClassifier
 
 from source.exception import CustomException
 from source.logger import logging
-
 from source.utils import save_object, evaluate_models
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+source_dir = os.path.dirname(os.path.dirname(current_dir))
+sys.path.append(source_dir)
 
 @dataclass
 class ModelTrainerConfig:
@@ -27,7 +30,13 @@ class ModelTrainerConfig:
 class ModelTrainer:
     def __init__(self):
         self.model_trainer_config = ModelTrainerConfig()
-        
+
+    def preprocess_data(self, X_train, X_test):
+        scaler = StandardScaler()
+        X_train_normalized = scaler.fit_transform(X_train)
+        X_test_normalized = scaler.transform(X_test)
+        return X_train_normalized, X_test_normalized
+
     def initiate_model_trainer(self, train_array, test_array, preprocessor_path):
         try:
             logging.info("Starting model training")
@@ -35,12 +44,14 @@ class ModelTrainer:
             
             logging.info("Split training and test input data")
             X_train, y_train, X_test, y_test = (
-                train_array[:, :-1],
-                train_array[:, -1],
-                test_array[:, :-1],
-                test_array[:, -1]
+                train_array[0],
+                train_array[1],
+                test_array[0],
+                test_array[1]
             )
             logging.info("Data split into train and test sets")
+            
+            X_train, X_test = self.preprocess_data(X_train, X_test)
             
             models = {
                 "Random Forest": RandomForestClassifier(),
@@ -72,21 +83,18 @@ class ModelTrainer:
                     "max_depth": [3, 5, 7, 9, 11]
                 },
                 "Logistic Regression": {
-                    "penalty": ["l1", "l2", "elasticnet", "none"],
-                    "C": [0.001, 0.01, 0.1, 1.0, 10.0, 100.0],
-                    "solver": ["lbfgs", "liblinear", "saga", "newton-cg"]
+                    "C": [0.01, 0.1, 1, 10, 100],
+                    "max_iter": [100, 200, 300, 400, 500]
                 },
                 "K-Neighbors Classifier": {
-                    "n_neighbors": [3, 5, 7, 9, 11, 13, 15],
+                    "n_neighbors": [3, 5, 7, 9, 11],
                     "weights": ["uniform", "distance"],
-                    "algorithm": ["auto", "ball_tree", "kd_tree", "brute"]
+                    "algorithm": ["ball_tree", "kd_tree", "brute"]
                 },
                 "XGBClassifier": {
                     "n_estimators": [100, 200, 300, 400, 500],
                     "learning_rate": [0.01, 0.05, 0.1, 0.2, 0.3],
-                    "max_depth": [3, 5, 7, 9, 11],
-                    "colsample_bytree": [0.3, 0.5, 0.7, 0.9, 1.0],
-                    "subsample": [0.6, 0.7, 0.8, 0.9, 1.0]
+                    "max_depth": [3, 5, 7, 9, 11]
                 },
                 "CatBoosting Classifier": {
                     "iterations": [100, 200, 300, 400, 500],
@@ -99,41 +107,28 @@ class ModelTrainer:
                 }
             }
             
-            logging.info("Models and hyperparameters defined")
-            start_time = time.time()
             model_report = evaluate_models(X_train, y_train, X_test, y_test, models, params)
-            logging.info(f"Model evaluation report: {model_report}")
-            logging.info(f"Total model evaluation time: {time.time() - start_time:.2f} seconds")
-            
-            ## To get best model score from dict
+
+            # Get the best model score from the dictionary
             best_model_score = max(sorted(model_report.values()))
-            logging.info(f"Best model score: {best_model_score}")
-            
-            ## To get best model name from dict
+
+            # Get the best model name from the dictionary
             best_model_name = list(model_report.keys())[
                 list(model_report.values()).index(best_model_score)
             ]
-            best_model = models[best_model_name]
-            logging.info(f"Best model found: {best_model_name}")
 
-            if best_model_score < 0.6:
-                raise CustomException("No best model found")
-            logging.info("Best model found with sufficient accuracy")
-            
-            # Ensure the best model is fitted properly before saving and using it
-            best_model.fit(X_train, y_train)
-            
+            best_model = models[best_model_name]
+
+            logging.info(f"Best model found: {best_model_name} with accuracy: {best_model_score}")
+
             save_object(
                 file_path=self.model_trainer_config.trained_model_file_path,
                 obj=best_model
             )
-            logging.info("Model saved successfully")
-            
+
             predicted = best_model.predict(X_test)
-            acc_score = accuracy_score(y_test, predicted)
-            logging.info(f"Accuracy score: {acc_score}")
-            return acc_score
-            
+            accuracy = accuracy_score(y_test, predicted)
+            return accuracy
+        
         except Exception as e:
-            logging.error("Error in model training", exc_info=True)
             raise CustomException(e, sys)

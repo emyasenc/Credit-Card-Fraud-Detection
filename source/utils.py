@@ -5,7 +5,6 @@ import dill
 from sklearn.metrics import accuracy_score
 from source.exception import CustomException
 from sklearn.model_selection import GridSearchCV
-
 from joblib import Parallel, delayed
 import time
 
@@ -43,11 +42,13 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, params):
         return model_name, test_model_score, best_model, grid_search.best_params_
 
     try:
+        # Evaluate all models in parallel
         results = Parallel(n_jobs=-1)(
             delayed(train_and_evaluate)(model_name, model, params[model_name], X_train, y_train, X_test, y_test)
             for model_name, model in models.items()
         )
         
+        # Prepare evaluation report
         report = {model_name: test_model_score for model_name, test_model_score, _, _ in results}
         best_model_info = max(results, key=lambda item: item[1])
         

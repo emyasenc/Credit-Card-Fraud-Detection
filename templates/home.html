@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Credit Card Fraud Detection</title>
+    <!-- Add Bootstrap CSS for styling -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .instructions {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login mt-5">
+            <h1 class="text-center">Credit Card Fraud Detection Analysis</h1>
+            <form action="{{ url_for('predict_datapoint') }}" method="post">
+                <h2>
+                    <legend>Enter Transaction Details</legend>
+                </h2>
+                
+                <div class="instructions">
+                    Please enter the values for V1 through V28 as provided by your dataset. 
+                    The values should be numeric and correspond to the anonymized features of the transaction.
+                </div>
+                
+                <!-- Input fields for V1 through V28 -->
+                {% for i in range(1, 29) %}
+                <div class="mb-3">
+                    <label class="form-label">Feature V{{ i }}</label>
+                    <input class="form-control" type="number" name="V{{ i }}" placeholder="Enter value for V{{ i }}" step="any" required />
+                </div>
+                {% endfor %}
+                
+                <div class="mb-3">
+                    <label class="form-label">Transaction Amount</label>
+                    <input class="form-control" type="number" name="amount" placeholder="Enter the transaction amount" step="any" required />
+                </div>
+                
+                <div class="mb-3">
+                    <input class="btn btn-primary" type="submit" value="Predict Fraudulence" required />
+                </div>
+            </form>
+            
+            <!-- Display prediction result -->
+            <h2 class="text-center">
+                THE PREDICTION IS: {{ results }}
+            </h2>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS and dependencies for interactive elements -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
