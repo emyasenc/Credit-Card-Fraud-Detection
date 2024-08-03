@@ -59,7 +59,7 @@ Saving the Model
 ## XGBoost
 ## CatBoost
 
-###Files
+### Files
 ## model_trainer.py: Script for training and evaluating models.
 ## data_ingestion.py: Script for loading and preprocessing data.
 ## data_transformation.py: Script for feature engineering and transformation.
@@ -67,5 +67,5 @@ Saving the Model
 ## predict_pipeline.py: Script for making predictions with the trained model.
 ## train_pipeline.py: Script for managing the end-to-end training pipeline.
 
-### License
+# License
 # This project is licensed under the MIT License.
