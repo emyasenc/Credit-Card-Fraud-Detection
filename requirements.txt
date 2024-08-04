@@ -1,4 +1,4 @@
-pandas
+pandas==2.2.2
 numpy==1.26.3
 seaborn
 matplotlib
@@ -7,4 +7,6 @@ catboost==1.0.5
 xgboost
 dill
 joblib
+flask
+pyspark
 #-e .

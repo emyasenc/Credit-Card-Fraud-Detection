@@ -5,7 +5,7 @@
 import os
 import sys
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedShuffleSplit
 from dataclasses import dataclass
 
 from source.exception import CustomException
@@ -19,19 +19,40 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 @dataclass
 class DataIngestionConfig:
-    train_data_path: str = os.path.join('artifact', "train2.csv")
-    test_data_path: str = os.path.join('artifact', "test2.csv")
+    train_data_path: str = os.path.join('artifact', "train.csv")
+    test_data_path: str = os.path.join('artifact', "test.csv")
     raw_data_path: str = os.path.join('artifact', "combined_transactions.csv")
 
 class DataIngestion:
-    def __init__(self):
+    def __init__(self, sample_size=10000):
         self.ingestion_config = DataIngestionConfig()
+        self.sample_size = sample_size  # Add sample size attribute
         
+    def stratified_sampling(self, data, target_column, sample_size, test_size=0.2, random_state=42):
+        # Separate features and target
+        X = data.drop(columns=[target_column])
+        y = data[target_column]
+
+        # Initialize StratifiedShuffleSplit
+        sss = StratifiedShuffleSplit(n_splits=1, test_size=test_size, random_state=random_state)
+
+        # Perform the split
+        for train_index, test_index in sss.split(X, y):
+            X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+            y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+        # Control the sample size
+        if sample_size < len(X_train):
+            X_train = X_train.sample(n=sample_size, random_state=random_state)
+            y_train = y_train.loc[X_train.index]
+
+        return X_train, X_test, y_train, y_test
+
     def initiate_data_ingestion(self):
         logging.info("Entered the data ingestion method or component")
         try:
             # Load the data with | delimiter
-            df = pd.read_csv('/Users/sophia/Desktop/ml_projects/notebook/combined_transactions.csv', delimiter='|')
+            df = pd.read_csv('/Users/sophia/Desktop/ml_projects/notebook/all_transactions.csv', delimiter='|')
             logging.info('Read the dataset as dataframe')
             
             # Ensure directory exists
@@ -43,10 +64,14 @@ class DataIngestion:
             logging.info("Train-test split initiated")
             
             # Identify the target column for stratification
-            target_column = 'target'  # Update this to the actual target column name
+            target_column = 'is_fraud'  # Update this to the actual target column name
             
-            # Train-test split with stratified sampling
-            train_set, test_set = train_test_split(df, test_size=0.2, random_state=42, stratify=df["is_fraud"])
+            # Perform stratified sampling
+            X_train, X_test, y_train, y_test = self.stratified_sampling(df, target_column, self.sample_size)
+
+            # Combine features and target for saving
+            train_set = pd.concat([X_train, y_train], axis=1)
+            test_set = pd.concat([X_test, y_test], axis=1)
             
             # Save the train and test data with , delimiter
             train_set.to_csv(self.ingestion_config.train_data_path, index=False, header=True, sep=',')
@@ -62,7 +87,8 @@ class DataIngestion:
             raise CustomException(e, sys)
 
 if __name__ == "__main__":
-    obj = DataIngestion()
+    sample_size = 600
+    obj = DataIngestion(sample_size=sample_size)
     train_data, test_data = obj.initiate_data_ingestion()
     
     data_transformation = DataTransformation()
@@ -75,4 +101,3 @@ if __name__ == "__main__":
     # Traditional model training
     model_trainer = ModelTrainer()
     test_accuracy = model_trainer.initiate_model_trainer((X_train, y_train), (X_test, y_test), preprocessor_path)
-
