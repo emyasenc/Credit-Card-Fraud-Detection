@@ -2,58 +2,185 @@
 <html>
 <head>
     <title>Credit Card Fraud Detection</title>
-    <!-- Add Bootstrap CSS for styling -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .instructions {
-            color: #666;
-            font-style: italic;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .form-group {
             margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        .form-group input[type="number"]::-webkit-inner-spin-button, 
+        .form-group input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .form-group .placeholder {
+            color: #aaa;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="login mt-5">
-            <h1 class="text-center">Credit Card Fraud Detection Analysis</h1>
-            <form action="{{ url_for('predict_datapoint') }}" method="post">
-                <h2>
-                    <legend>Enter Transaction Details</legend>
-                </h2>
-                
-                <div class="instructions">
-                    Please enter the values for V1 through V28 as provided by your dataset. 
-                    The values should be numeric and correspond to the anonymized features of the transaction.
-                </div>
-                
-                <!-- Input fields for V1 through V28 -->
-                {% for i in range(1, 29) %}
-                <div class="mb-3">
-                    <label class="form-label">Feature V{{ i }}</label>
-                    <input class="form-control" type="number" name="V{{ i }}" placeholder="Enter value for V{{ i }}" step="any" required />
-                </div>
-                {% endfor %}
-                
-                <div class="mb-3">
-                    <label class="form-label">Transaction Amount</label>
-                    <input class="form-control" type="number" name="amount" placeholder="Enter the transaction amount" step="any" required />
-                </div>
-                
-                <div class="mb-3">
-                    <input class="btn btn-primary" type="submit" value="Predict Fraudulence" required />
-                </div>
-            </form>
-            
-            <!-- Display prediction result -->
-            <h2 class="text-center">
-                THE PREDICTION IS: {{ results }}
-            </h2>
-        </div>
-    </div>
+        <h1>Credit Card Fraud Detection</h1>
 
-    <!-- Add Bootstrap JS and dependencies for interactive elements -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <form action="{{ url_for('predict_datapoint') }}" method="post">
+            <legend>Fraud Detection Prediction</legend>
+            <div class="form-group">
+                <label for="ssn">SSN</label>
+                <input type="text" id="ssn" name="ssn" placeholder="Enter SSN" required>
+                <small>Format: XXX-XX-XXXX</small>
+            </div>
+            <div class="form-group">
+                <label for="cc_num">Credit Card Number</label>
+                <input type="text" id="cc_num" name="cc_num" placeholder="Enter Credit Card Number" required>
+            </div>
+            <div class="form-group">
+                <label for="first">First Name</label>
+                <input type="text" id="first" name="first" placeholder="Enter First Name" required>
+            </div>
+            <div class="form-group">
+                <label for="last">Last Name</label>
+                <input type="text" id="last" name="last" placeholder="Enter Last Name" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option class="placeholder" selected disabled value="">Select Gender</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="street">Street Address</label>
+                <input type="text" id="street" name="street" placeholder="Enter Street Address" required>
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" placeholder="Enter City" required>
+            </div>
+            <div class="form-group">
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" placeholder="Enter State" required>
+            </div>
+            <div class="form-group">
+                <label for="zip">ZIP Code</label>
+                <input type="text" id="zip" name="zip" placeholder="Enter ZIP Code" required>
+            </div>
+            <div class="form-group">
+                <label for="lat">Latitude</label>
+                <input type="number" id="lat" name="lat" step="0.0001" placeholder="Enter Latitude" required>
+            </div>
+            <div class="form-group">
+                <label for="long">Longitude</label>
+                <input type="number" id="long" name="long" step="0.0001" placeholder="Enter Longitude" required>
+            </div>
+            <div class="form-group">
+                <label for="city_pop">City Population</label>
+                <input type="number" id="city_pop" name="city_pop" placeholder="Enter City Population" required>
+            </div>
+            <div class="form-group">
+                <label for="job">Job</label>
+                <input type="text" id="job" name="job" placeholder="Enter Job Title" required>
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+            <div class="form-group">
+                <label for="acct_num">Account Number</label>
+                <input type="text" id="acct_num" name="acct_num" placeholder="Enter Account Number" required>
+            </div>
+            <div class="form-group">
+                <label for="profile">Profile</label>
+                <input type="text" id="profile" name="profile" placeholder="Enter Profile" required>
+            </div>
+            <div class="form-group">
+                <label for="trans_num">Transaction Number</label>
+                <input type="text" id="trans_num" name="trans_num" placeholder="Enter Transaction Number" required>
+            </div>
+            <div class="form-group">
+                <label for="trans_date">Transaction Date</label>
+                <input type="date" id="trans_date" name="trans_date" required>
+            </div>
+            <div class="form-group">
+                <label for="trans_time">Transaction Time</label>
+                <input type="time" id="trans_time" name="trans_time" required>
+            </div>
+            <div class="form-group">
+                <label for="unix_time">UNIX Time</label>
+                <input type="number" id="unix_time" name="unix_time" placeholder="Enter UNIX Time" required>
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" placeholder="Enter Transaction Category" required>
+            </div>
+            <div class="form-group">
+                <label for="amt">Amount</label>
+                <input type="number" id="amt" name="amt" step="0.01" placeholder="Enter Amount" required>
+            </div>
+            <div class="form-group">
+                <label for="merchant">Merchant</label>
+                <input type="text" id="merchant" name="merchant" placeholder="Enter Merchant Name" required>
+            </div>
+            <div class="form-group">
+                <label for="merch_lat">Merchant Latitude</label>
+                <input type="number" id="merch_lat" name="merch_lat" step="0.0001" placeholder="Enter Merchant Latitude" required>
+            </div>
+            <div class="form-group">
+                <label for="merch_long">Merchant Longitude</label>
+                <input type="number" id="merch_long" name="merch_long" step="0.0001" placeholder="Enter Merchant Longitude" required>
+            </div>
+            <div class="form-group">
+                <input class="btn" type="submit" value="Predict Fraud Risk">
+            </div>
+        </form>
+        <h2>
+            Prediction Result: {{results}}
+        </h2>
+    </div>
 </body>
 </html>
