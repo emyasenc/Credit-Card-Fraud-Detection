@@ -70,33 +70,16 @@
         <form action="{{ url_for('predict_datapoint') }}" method="post">
             <legend>Fraud Detection Prediction</legend>
             <div class="form-group">
-                <label for="ssn">SSN</label>
-                <input type="text" id="ssn" name="ssn" placeholder="Enter SSN" required>
-                <small>Format: XXX-XX-XXXX</small>
-            </div>
-            <div class="form-group">
                 <label for="cc_num">Credit Card Number</label>
                 <input type="text" id="cc_num" name="cc_num" placeholder="Enter Credit Card Number" required>
-            </div>
-            <div class="form-group">
-                <label for="first">First Name</label>
-                <input type="text" id="first" name="first" placeholder="Enter First Name" required>
-            </div>
-            <div class="form-group">
-                <label for="last">Last Name</label>
-                <input type="text" id="last" name="last" placeholder="Enter Last Name" required>
             </div>
             <div class="form-group">
                 <label for="gender">Gender</label>
                 <select id="gender" name="gender" required>
                     <option class="placeholder" selected disabled value="">Select Gender</option>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
                 </select>
-            </div>
-            <div class="form-group">
-                <label for="street">Street Address</label>
-                <input type="text" id="street" name="street" placeholder="Enter Street Address" required>
             </div>
             <div class="form-group">
                 <label for="city">City</label>
@@ -127,30 +110,6 @@
                 <input type="text" id="job" name="job" placeholder="Enter Job Title" required>
             </div>
             <div class="form-group">
-                <label for="dob">Date of Birth</label>
-                <input type="date" id="dob" name="dob" required>
-            </div>
-            <div class="form-group">
-                <label for="acct_num">Account Number</label>
-                <input type="text" id="acct_num" name="acct_num" placeholder="Enter Account Number" required>
-            </div>
-            <div class="form-group">
-                <label for="profile">Profile</label>
-                <input type="text" id="profile" name="profile" placeholder="Enter Profile" required>
-            </div>
-            <div class="form-group">
-                <label for="trans_num">Transaction Number</label>
-                <input type="text" id="trans_num" name="trans_num" placeholder="Enter Transaction Number" required>
-            </div>
-            <div class="form-group">
-                <label for="trans_date">Transaction Date</label>
-                <input type="date" id="trans_date" name="trans_date" required>
-            </div>
-            <div class="form-group">
-                <label for="trans_time">Transaction Time</label>
-                <input type="time" id="trans_time" name="trans_time" required>
-            </div>
-            <div class="form-group">
                 <label for="unix_time">UNIX Time</label>
                 <input type="number" id="unix_time" name="unix_time" placeholder="Enter UNIX Time" required>
             </div>
@@ -175,11 +134,47 @@
                 <input type="number" id="merch_long" name="merch_long" step="0.0001" placeholder="Enter Merchant Longitude" required>
             </div>
             <div class="form-group">
+                <label for="trans_year">Transaction Year</label>
+                <input type="number" id="trans_year" name="trans_year" placeholder="Enter Transaction Year" required>
+            </div>
+            <div class="form-group">
+                <label for="trans_month">Transaction Month</label>
+                <input type="number" id="trans_month" name="trans_month" placeholder="Enter Transaction Month" required>
+            </div>
+            <div class="form-group">
+                <label for="trans_day">Transaction Day</label>
+                <input type="number" id="trans_day" name="trans_day" placeholder="Enter Transaction Day" required>
+            </div>
+            <div class="form-group">
+                <label for="trans_hour">Transaction Hour</label>
+                <input type="number" id="trans_hour" name="trans_hour" placeholder="Enter Transaction Hour" required>
+            </div>
+            <div class="form-group">
+                <label for="trans_minute">Transaction Minute</label>
+                <input type="number" id="trans_minute" name="trans_minute" placeholder="Enter Transaction Minute" required>
+            </div>
+            <div class="form-group">
+                <label for="trans_second">Transaction Second</label>
+                <input type="number" id="trans_second" name="trans_second" placeholder="Enter Transaction Second" required>
+            </div>
+            <div class="form-group">
+                <label for="day_of_week">Day of Week</label>
+                <input type="number" id="day_of_week" name="day_of_week" placeholder="Enter Day of Week" required>
+            </div>
+            <div class="form-group">
+                <label for="distance_to_merchant">Distance to Merchant</label>
+                <input type="number" id="distance_to_merchant" name="distance_to_merchant" step="0.0001" placeholder="Enter Distance to Merchant" required>
+            </div>
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" placeholder="Enter Age" required>
+            </div>
+            <div class="form-group">
                 <input class="btn" type="submit" value="Predict Fraud Risk">
             </div>
         </form>
         <h2>
-            Prediction Result: {{results}}
+            Prediction Result: {{ results }}
         </h2>
     </div>
 </body>
