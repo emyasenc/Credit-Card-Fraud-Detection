@@ -1,4 +1,4 @@
-### Credit Card Fraud Detection Model
+# Credit Card Fraud Detection Model
 
 # Description
 The Credit Card Fraud Detection Model is designed to identify fraudulent transactions in a credit card dataset. The model leverages traditional machine learning algorithms to classify transactions as either legitimate or fraudulent based on anonymized features provided in the dataset. This solution is aimed at enhancing security by automatically flagging suspicious activities, reducing the risk of financial loss, and improving overall fraud detection efficiency.
