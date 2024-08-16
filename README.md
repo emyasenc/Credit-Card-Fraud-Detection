@@ -41,9 +41,9 @@ Saving the Model
 ### Persistence: The trained models are saved to disk using dill, ensuring that it can be easily loaded and used for future predictions without retraining.
 
 ## How to Use
-  ### * Setup: Ensure all dependencies are installed, including Scikit-Learn, PySpark, and other required libraries.
+  ### * Setup: Ensure all dependencies are installed, including Scikit-Learn, and other required libraries.
   ### * Data Preparation: Place your data files (train2.csv and test2.csv) in the appropriate directory.
-  ### * Training: Run the model_trainer.py script to train the model. The script will perform data preprocessing, train multiple models, and save the best-performing model.
+  ### * Training: Run the model_trainer.py script to train the model. The script will perform data preprocessing, train multiple models, and save all the best models, so you can choose the best one for your needs.
   ### * Prediction: Use the trained model to make predictions on new transaction data by loading the model and applying it to the dataset.
   ### * Evaluation: Check the accuracy of the model using the provided evaluation metrics.
 
