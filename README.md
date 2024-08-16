@@ -50,7 +50,6 @@ Saving the Model
 ## Dependencies
   ### * Python 3.x
   ### * Scikit-Learn
-  ### * PySpark
   ### * Dill
   ### * Joblib
   ### * XGBoost
