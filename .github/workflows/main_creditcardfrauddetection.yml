@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - creditCardFraudPrediction
+name: Build and deploy Python app to Azure Web App - creditCardFraudDetection
 
 on:
   push:
@@ -65,14 +65,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_CC7106C1595F4A89AE76D8433CBCDC48 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_24C32C4C3DC745DA8964FCEFEDB1DC17 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3A12ADCFF8194FC793CAF03FD67BE67F }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_D5E1118BC62340E395ACAE06AADD2E46 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_937C4A76094E4FC1A8B5092BFC1CBAC2 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7AAA42722C9648B691B2A9DE872AD4CB }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'creditCardFraudPrediction'
+          app-name: 'creditCardFraudDetection'
           slot-name: 'Production'
           
