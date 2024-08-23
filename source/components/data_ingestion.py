@@ -4,6 +4,7 @@
 ## Run in terminal by the command: python -m source.components.data_ingestion
 import os
 import sys
+import sklearn
 
 # Get the absolute path of the project directory
 project_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -39,7 +40,7 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info("Entered the data ingestion method or component")
         try:
-            df=pd.read_csv('/Users/sophia/Desktop/ml_projects/notebook/data/combined_transaction.csv')
+            df=pd.read_csv('/Users/sophia/Desktop/ml_projects/artifact/combined_transactions.csv')
             logging.info('Read the dataset as dataframe')
 
             os.makedirs(os.path.dirname(self.ingestion_config.train_data_path),exist_ok=True)

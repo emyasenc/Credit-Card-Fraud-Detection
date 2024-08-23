@@ -1,9 +1,10 @@
 pandas==2.2.2
-numpy==1.26.3
+numpy==1.24.3
 seaborn
+setuptools
 matplotlib
 scikit-learn==1.5.1
-catboost==1.0.5
+catboost==1.2
 xgboost
 dill
 joblib

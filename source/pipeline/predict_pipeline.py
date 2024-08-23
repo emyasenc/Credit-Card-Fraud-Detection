@@ -16,8 +16,8 @@ categorical_columns = [
 
 # Define all columns
 all_columns = [
-    "cc_num", "gender", "city", "state", "zip", "lat", "long", "city_pop", "job", 
-    "unix_time", "category", "amt", "is_fraud", "merchant", "merch_lat", "merch_long",
+    "gender", "city", "state", "zip", "lat", "long", "city_pop", "job", 
+    "unix_time", "category", "amt", "merchant", "merch_lat", "merch_long",
     "trans_year", "trans_month", "trans_day", "trans_hour", "trans_minute", "trans_second", 
     "day_of_week", "distance_to_merchant", "age"
 ]
@@ -28,7 +28,7 @@ class PredictPipeline:
 
     def predict(self, features):
         try:
-            model_path = os.path.join("artifact", "model.pkl")
+            model_path = os.path.join("artifact", "best_model.pkl")
             preprocessor_path = os.path.join("artifact", "preprocessor.pkl")
             print("Before Loading")
             model = load_object(file_path=model_path)
@@ -42,12 +42,11 @@ class PredictPipeline:
             raise CustomException(e, sys)
 
 class CustomData:
-    def __init__(self, cc_num: str, gender: str, city: str, state: str, zip: str, lat: float, long: float,
-                 city_pop: int, job: str, unix_time: int, category: str, amt: float, is_fraud: int, 
+    def __init__(self, gender: str, city: str, state: str, zip: str, lat: float, long: float,
+                 city_pop: int, job: str, unix_time: int, category: str, amt: float,
                  merchant: str, merch_lat: float, merch_long: float, trans_year: int, trans_month: int,
                  trans_day: int, trans_hour: int, trans_minute: int, trans_second: int, day_of_week: int,
                  distance_to_merchant: float, age: int, **kwargs):
-        self.cc_num = cc_num
         self.gender = gender
         self.city = city
         self.state = state
@@ -59,7 +58,6 @@ class CustomData:
         self.unix_time = unix_time
         self.category = category
         self.amt = amt
-        self.is_fraud = is_fraud
         self.merchant = merchant
         self.merch_lat = merch_lat
         self.merch_long = merch_long
@@ -77,7 +75,6 @@ class CustomData:
         try:
             # Build dictionary for all features
             custom_data_input_dict = {
-                "cc_num": [self.cc_num],
                 "gender": [self.gender],
                 "city": [self.city],
                 "state": [self.state],
@@ -89,7 +86,6 @@ class CustomData:
                 "unix_time": [self.unix_time],
                 "category": [self.category],
                 "amt": [self.amt],
-                "is_fraud": [self.is_fraud],
                 "merchant": [self.merchant],
                 "merch_lat": [self.merch_lat],
                 "merch_long": [self.merch_long],
