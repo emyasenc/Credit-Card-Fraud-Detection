@@ -14,13 +14,11 @@ from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 from catboost import CatBoostClassifier
 from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import classification_report, precision_score, recall_score, f1_score, accuracy_score
+from imblearn.combine import SMOTETomek  # Import SMOTETomek
 from source.exception import CustomException
 from source.logger import logging
 from source.utils import save_object
-
-from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import RandomUnderSampler
-from imblearn.pipeline import Pipeline as ImbPipeline
 
 @dataclass
 class ModelTrainerConfig:
@@ -40,9 +38,9 @@ class ModelTrainer:
                 test_array[:, -1]
             )
             
-            # Apply SMOTE to balance the training dataset
-            smote = SMOTE(random_state=42)
-            X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+            # Apply SMOTE with Tomek Links to balance the training dataset
+            smote_tomek = SMOTETomek(random_state=42)
+            X_train_resampled, y_train_resampled = smote_tomek.fit_resample(X_train, y_train)
             
             models = {
                 "Random Forest": RandomForestClassifier(class_weight='balanced'),
@@ -50,7 +48,7 @@ class ModelTrainer:
                 "Gradient Boosting": GradientBoostingClassifier(),
                 "Logistic Regression": LogisticRegression(class_weight='balanced'),
                 "K-Neighbors Classifier": KNeighborsClassifier(),
-                "XGBClassifier": XGBClassifier(scale_pos_weight=len(y_train_resampled)/sum(y_train_resampled)), # Handle imbalance
+                "XGBClassifier": XGBClassifier(scale_pos_weight=len(y_train_resampled)/sum(y_train_resampled)),
                 "CatBoosting Classifier": CatBoostClassifier(verbose=False),
                 "AdaBoost Classifier": AdaBoostClassifier(),
             }
@@ -98,10 +96,18 @@ class ModelTrainer:
                 }
             }
 
+            # Define weights for each metric, giving more weight to the F1 score
+            WEIGHTS = {
+                "accuracy": 0.1,
+                "precision": 0.2,
+                "recall": 0.2,
+                "f1_score": 0.5  # Increased weight for F1 score
+            }
+
             model_report = {}
             best_model_name = None
             best_model = None
-            best_score = -np.inf  # Initialize with negative infinity to ensure any model score will be higher
+            best_composite_score = -np.inf  # Initialize with negative infinity to ensure any model score will be higher
 
             for model_name, model in models.items():
                 logging.info(f"Training {model_name} with parameters: {params[model_name]}")
@@ -119,19 +125,44 @@ class ModelTrainer:
                 best_score_candidate = grid_search.best_score_
                 logging.info(f"{model_name} best score: {best_score_candidate:.4f}")
 
+                # Evaluate the best model on the test set
+                y_pred = best_model_candidate.predict(X_test)
+                accuracy = accuracy_score(y_test, y_pred)
+                precision = precision_score(y_test, y_pred)
+                recall = recall_score(y_test, y_pred)
+                f1 = f1_score(y_test, y_pred)
+
+                logging.info(f"{model_name} Test Accuracy: {accuracy:.4f}")
+                logging.info(f"{model_name} Test Precision: {precision:.4f}")
+                logging.info(f"{model_name} Test Recall: {recall:.4f}")
+                logging.info(f"{model_name} Test F1 Score: {f1:.4f}")
+
+                # Calculate composite score with higher weight for F1 score
+                composite_score = (
+                    WEIGHTS["accuracy"] * accuracy +
+                    WEIGHTS["precision"] * precision +
+                    WEIGHTS["recall"] * recall +
+                    WEIGHTS["f1_score"] * f1
+                )
+
                 model_report[model_name] = {
                     "best_model": best_model_candidate,
                     "best_score": best_score_candidate,
-                    "training_time": elapsed_time
+                    "training_time": elapsed_time,
+                    "test_accuracy": accuracy,
+                    "test_precision": precision,
+                    "test_recall": recall,
+                    "test_f1_score": f1,
+                    "composite_score": composite_score
                 }
 
-                # Check if this model is the best so far
-                if best_score_candidate > best_score:
-                    best_score = best_score_candidate
+                # Check if this model is the best so far based on the composite score
+                if composite_score > best_composite_score:
+                    best_composite_score = composite_score
                     best_model = best_model_candidate
                     best_model_name = model_name
 
-            logging.info(f"Best model: {best_model_name} with a score of {best_score:.4f}")
+            logging.info(f"Best model: {best_model_name} with a composite score of {best_composite_score:.4f}")
 
             # Save the best model
             save_object(
