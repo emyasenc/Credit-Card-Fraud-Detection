@@ -10,4 +10,5 @@ dill
 joblib
 flask
 imblearn
+gunicorn
 #-e .
